@@ -1,0 +1,29 @@
+%{
+#include <string.h>
+
+#include "gperf.h"
+
+#define month_abbr_lookup(str) _month_abbr_lookup(str, 3)
+
+%}
+
+%language=C
+%define lookup-function-name _month_abbr_lookup
+%define hash-function-name month_abbr_hash
+
+struct gsiv_t;
+%%
+####
+Jan,	1
+Feb,	2
+Mar,	3
+Apr,	4
+May,	5
+Jun,	6
+Jul,	7
+Aug,	8
+Sep,	9
+Oct,	10
+Nov,	11
+Dec,	12
+####

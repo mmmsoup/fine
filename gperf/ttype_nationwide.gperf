@@ -1,0 +1,33 @@
+%{
+#include <string.h>
+
+#include "gperf.h"
+
+#define ttype_lookup_nationwide(str, len) { _ttype_lookup_nationwide(str, 6) }
+
+/*
+	Transfer from
+	Visa purchase
+	Contactless Payment
+	Payment to
+	Visa Credit
+	Cash credit
+	Bank credit ...
+*/
+%}
+
+%language=C
+%define lookup-function-name _ttype_lookup_nationwide
+%define hash-function-name ttype_hash_nationwide
+
+struct gsiv_t;
+%%
+####
+Transf,		TTYPE_ACCT_CREDIT	
+Visa p,		TTYPE_CARD_DEBIT	
+Contac,		TTYPE_CARD_DEBIT	
+Paymen,		TTYPE_ACCT_DEBIT	
+Visa C,		TTYPE_CARD_CREDIT	
+Cash c,		TTYPE_CASH_CREDIT	
+Bank c,		TTYPE_ACCT_CREDIT	
+####

@@ -1,0 +1,74 @@
+%{
+#include <stdint.h>
+#include <string.h>
+
+#include "gperf.h"
+
+typedef enum {
+	TCAT_NONE,
+	TCAT_BILLS,
+	TCAT_EATINGOUT,
+	TCAT_GIFT,
+	TCAT_GOINGOUT,
+	TCAT_GROCERIES,
+	TCAT_INTEREST,
+	TCAT_LEISURE,
+	TCAT_LOANIN,
+	TCAT_LOANOUT,
+	TCAT_MOVEMONEY,
+	TCAT_PAY,
+	TCAT_RENT,
+	TCAT_SHOPPING,
+	TCAT_TRAVEL		 
+} transaction_categories;
+
+#define NUM_CATEGORIES (sizeof(tcat_pretty_strings)/sizeof(char*))
+
+#define TCAT_NETSAME	((1 << TCAT_NONE) | (1 << TCAT_MOVEMONEY))
+#define TCAT_NETMINUS	((1 << TCAT_BILLS) | (1 << TCAT_EATINGOUT) | (1 << TCAT_GOINGOUT) | (1 << TCAT_GROCERIES) | (1 << TCAT_LEISURE) | (1 << TCAT_LOANOUT) | (1 << TCAT_RENT) | (1 << TCAT_SHOPPING) | (1 << TCAT_TRAVEL))
+#define TCAT_NETPLUS	((1 << TCAT_GIFT) | (1 << TCAT_INTEREST) | (1 << TCAT_LOANIN) | (1 << TCAT_PAY))
+
+typedef uint16_t tcat_t;
+
+static const char *tcat_pretty_strings[] = {
+	"uncategorised",
+	"bills",
+	"eating out",
+	"gifts",
+	"going out",
+	"groceries",
+	"interest",
+	"leisure",
+	"loans",
+	"loan repayments",
+	"moving money",
+	"job income",
+	"rent",
+	"shopping",
+	"travel"
+};
+%}
+
+%language=C
+%define lookup-function-name tcat_lookup
+%define hash-function-name tcat_hash
+
+struct gsiv_t;
+%%
+####
+none,		TCAT_NONE
+bills,		TCAT_BILLS
+eatingout,	TCAT_EATINGOUT
+gift,		TCAT_GIFT
+goingout,	TCAT_GOINGOUT
+groceries,	TCAT_GROCERIES
+interest,	TCAT_INTEREST
+leisure,	TCAT_LEISURE
+loanin,		TCAT_LOANIN
+loanout,	TCAT_LOANOUT
+movemoney,	TCAT_MOVEMONEY
+pay,		TCAT_PAY
+rent,		TCAT_RENT
+shopping,	TCAT_SHOPPING
+travel,		TCAT_TRAVEL
+####

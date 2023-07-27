@@ -1,0 +1,77 @@
+%{
+#include <string.h>
+
+#include "gperf.h"
+
+/*
+	ATM		Automated Teller (Cash) Machine
+	BAC		Bankers Automated Clearing Services
+	BGC		Bank Giro Credit
+	BSP		Branch Single Payment
+	CDM		Cash & Deposit Machine
+	CHG		Charge
+	CHP		Payments by CHAPS transfer
+	CHQ		Cheque
+	C/L	  	Cashline
+	CUI		Centralised Unpaid In (Unpaid Cheque)
+	CWP		Cold Weather Payment
+	D/D		Direct Debit
+	DPC		[not explained on https://www.natwest.com/banking-with-natwest/how-to/understand-your-statement.html - outgoing account payments on my statement]
+	DIV		Dividend
+	DR		Account Overdrawn or Debit Item
+	DWP		Department for Work and Pensions
+	ERTF 	Exchange Rate Transaction Fee 
+	IBP		Inter-Branch Payment
+	INT		Interest
+	ITL		International
+	NDC		Non Dividend Counterfoil
+	OTR		Online Banking Transaction
+	POC		Post Office Counters
+	POS		Point of Sale/Debit Card Transaction
+	S/O		Standing Order
+	SBT		Screen Based Transaction
+	STF		Standard Transfer
+	TEL		Telephone Banking
+	TFR		Transfer
+	TLR		Teller Transaction 
+*/
+%}
+
+%language=C
+%define lookup-function-name ttype_lookup_natwest
+%define hash-function-name ttype_hash_natwest
+
+struct gsiv_t;
+%%
+####
+ATM,	TTYPE_CASH_DEBIT
+BAC,	TTYPE_ACCT_DEBIT
+BGC,	TTYPE_ACCT_CREDIT
+BSP,	TTYPE_UNKNOWN	
+CDM,	TTYPE_CASH_CREDIT
+CHG,	TTYPE_ACCT_DEBIT
+CHP,	TTYPE_UNKNOWN	
+CHQ,	TTYPE_CHEQUE
+C/L,	TTYPE_UNKNOWN	
+CUI,	TTYPE_UNKNOWN	
+CWP,	TTYPE_ACCT_CREDIT
+D/D,	TTYPE_ACCT_DEBIT
+DIV,	TTYPE_ACCT_CREDIT
+DPC,	TTYPE_ACCT_DEBIT
+DR,		TTYPE_UNKNOWN 
+DWP,	TTYPE_UNKNOWN	
+ERTF,	TTYPE_ACCT_DEBIT
+IBP,	TTYPE_UNKNOWN	
+INT,	TTYPE_ACCT_CREDIT
+ITL,	TTYPE_UNKNOWN	
+NDC,	TTYPE_UNKNOWN	
+OTR,	TTYPE_UNKNOWN	
+POC,	TTYPE_UNKNOWN	
+POS,	TTYPE_CARD_DEBIT
+S/O,	TTYPE_ACCT_DEBIT
+SBT,	TTYPE_UNKNOWN	
+STF,	TTYPE_UNKNOWN	
+TEL,	TTYPE_UNKNOWN	
+TFR,	TTYPE_ACCT_DEBIT
+TLR,	TTYPE_UNKNOWN	
+####

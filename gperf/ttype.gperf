@@ -1,0 +1,25 @@
+%{
+#include <stdint.h>
+#include <string.h>
+
+#include "gperf.h"
+%}
+
+%language=C
+%define lookup-function-name ttype_lookup
+%define hash-function-name ttype_hash
+
+struct gsiv_t;
+%%
+####
++acct,		TTYPE_ACCT_CREDIT
+-acct,		TTYPE_ACCT_DEBIT
++any,		TTYPE_UNKNOWN | TTYPE_CREDIT
+-any,		TTYPE_UNKNOWN | TTYPE_DEBIT
++card,		TTYPE_CARD_CREDIT
+-card,		TTYPE_CARD_DEBIT
++cash,		TTYPE_CASH_CREDIT
+-cash,		TTYPE_CASH_DEBIT
++unknown,	TTYPE_UNKNOWN | TTYPE_CREDIT
+-unknown,	TTYPE_UNKNOWN | TTYPE_DEBIT
+####
