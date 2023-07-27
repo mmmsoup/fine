@@ -3,7 +3,7 @@
 int load_categorisation_rules(catrule_list_t *list, char *path) {
 	csv_t csv;
 	if (csv_open(&csv, path) != EXIT_SUCCESS) {
-		fprintf(stderr, "%s\n", strerror(errno));
+		fprintf(stderr, "csv_open(): %s\n", strerror(errno));
 		return errno;
 	}
 

@@ -3,8 +3,8 @@
 int parse_nationwide(char *path, transaction_list_t *list) {
 	csv_t csv;
 	if (csv_open(&csv, path) != EXIT_SUCCESS) {
-		fprintf(stderr, "%s\n", strerror(errno));
-		return 0;
+		fprintf(stderr, "csv_open(): %s\n", strerror(errno));
+		return errno;
 	}
 
 	csv_line_t line;
@@ -53,8 +53,8 @@ int parse_nationwide(char *path, transaction_list_t *list) {
 int parse_natwest(char *path, transaction_list_t *list) {
 	csv_t csv;
 	if (csv_open(&csv, path) != EXIT_SUCCESS) {
-		fprintf(stderr, "%s\n", strerror(errno));
-		return 0;
+		fprintf(stderr, "csv_open(): %s\n", strerror(errno));
+		return errno;
 	}
 	
 	csv_skip_lines(&csv, 3);

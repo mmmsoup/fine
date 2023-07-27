@@ -27,4 +27,6 @@ typedef uint8_t ttype_t;
 
 #define IS_CREDIT(ttype) { return ttype & TTYPE_CREDIT; }
 
+const char *get_ttype_pretty_string(ttype_t);
+
 #endif

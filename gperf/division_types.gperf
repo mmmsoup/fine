@@ -1,0 +1,27 @@
+%{
+#include <string.h>
+
+#include "gperf.h"
+
+typedef enum { DIV_YEARS = 0, DIV_MONTHS = 1, DIV_WEEKS_SUN = 2, DIV_WEEKS_MON = 3 } division_types;
+%}
+
+%language=C
+%define lookup-function-name division_type_lookup
+%define hash-function-name division_type_hash
+
+struct gsiv_t;
+%%
+####
+year,	DIV_YEARS
+y,		DIV_YEARS
+month,	DIV_MONTHS
+m,		DIV_MONTHS
+week,	DIV_WEEKS_MON
+w,		DIV_WEEKS_MON
+monday,	DIV_WEEKS_MON
+mon,	DIV_WEEKS_MON
+sunday,	DIV_WEEKS_SUN
+sun,	DIV_WEEKS_SUN
+s,		DIV_WEEKS_SUN
+####

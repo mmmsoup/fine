@@ -1,6 +1,7 @@
 #ifndef DATE_H
 #define DATE_H
 
+#include "gperf/date_formats.h"
 #include "gperf/month_abbr.h"
 
 #define LEAP_YEAR(y) ((y % 4 == 0) - (y % 400 == 0))
@@ -15,14 +16,6 @@ typedef struct {
 extern const char *const weekday_names[7];
 extern const char *const month_names[13];
 
-typedef enum {
-	DATEFMT_DDMMYYYY,	// '01/01/1970'
-	DATEFMT_MMDDYYYY,	// '01/01/1970' but silly way round
-	DATEFMT_YYYYMMDD,	// '1970-01-01' ISO 8601 my beloved <3
-	DATEFMT_MMMYYYY,	// 'Jan 1970'
-	DATEFMT_YYYY,		// '1970'
-} date_formats;
-extern const int date_format_lengths[];
 char *datestr(date_t, int);
 
 // days since 1970-01-01

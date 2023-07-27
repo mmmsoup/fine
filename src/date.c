@@ -42,7 +42,7 @@ const int date_format_lengths[] = {
 char *datestr(date_t date, int format) {
 	static char str[11];
 	str[10] = '\0';
-	switch (format) {
+	switch (format == DATEFMT_NONE ? DEFAULT_DATEFMT : format) {
 		case DATEFMT_DDMMYYYY:
 			str[0] = (date.day / 10) + 0x30;
 			str[1] = (date.day % 10) + 0x30;
@@ -161,7 +161,7 @@ int date_division_index_week_mon(date_t date, date_t startdate) {
 	return (date.days_since_epoch-startdate.days_since_epoch)/7;
 }
 int date_division_index_month(date_t date, date_t startdate) {
-	return (date.year-startdate.year)*12 + (date.month-startdate.month+1);
+	return (date.year-startdate.year)*12 + (date.month-startdate.month);
 }
 int date_division_index_year(date_t date, date_t startdate) {
 	return date.year - startdate.year;

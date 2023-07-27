@@ -30,6 +30,12 @@ typedef struct {
 	date_t daterange[2]; // 0: earliest, 1: latest
 } transaction_list_t;
 
+typedef struct {
+	transaction_list_t *lists;
+	size_t num_accounts;
+	date_t daterange[2]; // 0: earliest, 1: latest
+} transaction_list_collection_t;
+
 int transaction_list_create(transaction_list_t *, char *, size_t);
 int transaction_list_resize(transaction_list_t *, size_t);
 int transaction_list_destroy(transaction_list_t *);
