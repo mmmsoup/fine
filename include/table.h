@@ -16,19 +16,24 @@
 #define TABLE_CROSS '+'
 */
 
-#define TABLE_HLINE			L'━'
-#define TABLE_VLINE			L'┃'
-#define TABLE_TOPLEFT		L'┏'
-#define TABLE_BOTTOMLEFT	L'┗'
-#define TABLE_TOPRIGHT		L'┓'
-#define TABLE_BOTTOMRIGHT	L'┛'
-#define TABLE_CROSS			L'╋'
+#define TABLE_HLINE			L'─'
+#define TABLE_VLINE			L'│'
+#define TABLE_TOPLEFT		L'┌'
+#define TABLE_BOTTOMLEFT	L'└'
+#define TABLE_TOPRIGHT		L'┐'
+#define TABLE_BOTTOMRIGHT	L'┘'
+#define TABLE_CROSS			L'┼'
 
-typedef enum {
-	TABLEFLAG_COLOUR = 0b00000001
-} table_flags;
-typedef uint8_t table_flags_t;
+#define TABLE_HLINE_BOLD		L'━'
+#define TABLE_VLINE_BOLD		L'┃'
+#define TABLE_TOPLEFT_BOLD		L'┏'
+#define TABLE_BOTTOMLEFT_BOLD	L'┗'
+#define TABLE_TOPRIGHT_BOLD		L'┓'
+#define TABLE_BOTTOMRIGHT_BOLD	L'┛'
+#define TABLE_CROSS_BOLD		L'╋'
 
-int print_table(transaction_list_collection_t, int, int, table_flags_t);
+#define TABLE_CROSS_BOLDHORI	L'┿'
+
+int print_table(transaction_list_collection_t, int, int, flags_t);
 
 #endif

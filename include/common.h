@@ -14,6 +14,11 @@
 #define MAX(a,b) (a < b ? b : a)
 #define MIN(a,b) (a > b ? b : a)
 
+typedef enum {
+	FLAG_COLOUR = 0b00000001
+} flags;
+typedef uint8_t flags_t;
+
 typedef struct {
 	int amount;
 	date_t date;

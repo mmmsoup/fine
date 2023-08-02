@@ -44,6 +44,8 @@ int parse_nationwide(char *path, transaction_list_t *list) {
 		transaction++;
 	}
 
+	csv_close(&csv);
+
 	list->daterange[0] = list->transactions[0].date;
 	list->daterange[1] = list->transactions[list->size-1].date;
 
@@ -103,6 +105,8 @@ int parse_natwest(char *path, transaction_list_t *list) {
 		list->size++;
 		transaction++;
 	} while (csv_next_line(&csv, &line));
+
+	csv_close(&csv);
 
 	list->daterange[0] = list->transactions[list->size-1].date;
 	list->daterange[1] = list->transactions[0].date;

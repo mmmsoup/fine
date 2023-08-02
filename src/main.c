@@ -21,13 +21,11 @@ int main(int argc, char **argv) {
 
 	const enum { OUTPUT_TABLE, OUTPUT_UNCATEGORISED } output_types;
 
-	int no_colour = 0;
-	int config_loaded = 0;
 	int output_type = OUTPUT_TABLE;
 	int date_format = DATEFMT_NONE;
 	int division_type = DIV_MONTHS;
 
-	table_flags_t table_flags = TABLEFLAG_COLOUR;
+	flags_t flags = FLAG_COLOUR;
 
 	catrule_list_t rules;
 	transaction_list_collection_t collection;
@@ -43,8 +41,7 @@ int main(int argc, char **argv) {
 			if (strcmp(argv[i], "config") == 0) {
 				ASSERT_OPTION_HAS_ARGUMENT(argc, argv, i);
 				i++;
-				if (load_categorisation_rules(&rules, argv[i]) == EXIT_SUCCESS) config_loaded = 1;
-				else {
+				if (load_categorisation_rules(&rules, argv[i]) != EXIT_SUCCESS) {
 					fwprintf(stderr, L"unable to parse config file '%s'\n", argv[i]);
 					return EXIT_FAILURE;
 				}
@@ -69,8 +66,8 @@ int main(int argc, char **argv) {
 					division_type = gsiv->value;
 				}
 			} else if (strcmp(argv[i], "no-colour") == 0) {
-				table_flags |= TABLEFLAG_COLOUR;
-				table_flags -= TABLEFLAG_COLOUR;
+				flags |= FLAG_COLOUR;
+				flags -= FLAG_COLOUR;
 			} else if (strcmp(argv[i], "output") == 0) {
 				ASSERT_OPTION_HAS_ARGUMENT(argc, argv, i);
 				i++;
@@ -139,7 +136,7 @@ int main(int argc, char **argv) {
 
 	switch (output_type) {
 		case OUTPUT_TABLE:
-			print_table(collection, division_type, date_format, table_flags);
+			print_table(collection, division_type, date_format, flags);
 			break;
 		case OUTPUT_UNCATEGORISED:
 			for (int i = 0; i < collection.num_accounts; i++) {
@@ -148,12 +145,12 @@ int main(int argc, char **argv) {
 				for (int j = 0; j < tlist->size; j++) {
 					if (tlist->transactions[j].category == TCAT_NONE) {
 						if (!header_printed) {
-							if (table_flags & TABLEFLAG_COLOUR) wprintf(L"%lc%lc \e[1m%s: %s\e[0m (%s)\n", TABLE_TOPLEFT, TABLE_HLINE, tlist->bank, tlist->name, tlist->file);
+							if (flags & FLAG_COLOUR) wprintf(L"%lc%lc \e[1m%s: %s\e[0m (%s)\n", TABLE_TOPLEFT_BOLD, TABLE_HLINE_BOLD, tlist->bank, tlist->name, tlist->file);
 							else wprintf(L"%lc%lc %s: %s (%s)\n", TABLE_TOPLEFT, TABLE_HLINE, tlist->bank, tlist->name, tlist->file);
 							header_printed = 1;
 						}
 
-						wprintf(L"%lc %ls %s ", TABLE_VLINE, datestr(tlist->transactions[j].date, date_format), get_ttype_pretty_string(tlist->transactions[j].type));
+						wprintf(L"%lc %ls %s ", TABLE_VLINE_BOLD, datestr(tlist->transactions[j].date, date_format), get_ttype_pretty_string(tlist->transactions[j].type));
 						if (tlist->transactions[j].amount < 0) {
 							wprintf(L"-£%.02f\t", (-1*(tlist->transactions[j].amount))/100.0f);
 						} else {
@@ -163,7 +160,7 @@ int main(int argc, char **argv) {
 					}
 				}
 				if (header_printed) {
-					wprintf(L"%lc%lc\n", TABLE_BOTTOMLEFT, TABLE_HLINE);
+					wprintf(L"%lc%lc\n", TABLE_BOTTOMLEFT_BOLD, TABLE_HLINE_BOLD);
 				}
 			}
 			break;
