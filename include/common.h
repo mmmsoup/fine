@@ -25,6 +25,8 @@ typedef struct {
 typedef struct {
 	transaction_t *transactions;
 	char *name;
+	char *bank;
+	char *file;
 	size_t size;
 	size_t capacity;
 	date_t daterange[2]; // 0: earliest, 1: latest
@@ -36,7 +38,7 @@ typedef struct {
 	date_t daterange[2]; // 0: earliest, 1: latest
 } transaction_list_collection_t;
 
-int transaction_list_create(transaction_list_t *, char *, size_t);
+int transaction_list_create(transaction_list_t *, char *, char *, char *, size_t);
 int transaction_list_resize(transaction_list_t *, size_t);
 int transaction_list_destroy(transaction_list_t *);
 

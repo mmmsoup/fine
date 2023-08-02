@@ -6,9 +6,15 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 BASEPATH="$SCRIPTPATH/.."
 BUILDPATH="$(realpath "$BASEPATH/build")"
 
-[[ $1 == "clean" ]] && rm -r "$BUILDPATH"
-
-if stat "$BUILDPATH/Makefile" &> /dev/null; then
+if [[ $1 == "clean" ]]; then
+	rm -r "$BUILDPATH"
+elif [[ $1 == "debug" ]]; then
+	rm -r "$BUILDPATH"
+	mkdir -p "$BUILDPATH"
+	cd "$BUILDPATH"
+	cmake -DCMAKE_BUILD_TYPE=Debug ..
+	make
+elif stat "$BUILDPATH/Makefile" &> /dev/null; then
 	cd "$BUILDPATH"
 	make
 else

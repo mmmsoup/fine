@@ -1,6 +1,7 @@
 %{
 #include <stdint.h>
 #include <string.h>
+#include <wchar.h>
 
 #include "gperf.h"
 
@@ -30,21 +31,21 @@ typedef enum {
 
 typedef uint16_t tcat_t;
 
-static const char *tcat_pretty_strings[] = {
-	"uncategorised",
-	"bills",
-	"eating out",
-	"gifts",
-	"going out",
-	"groceries",
-	"interest",
-	"leisure",
-	"loans",
-	"moving money",
-	"job income",
-	"rent",
-	"shopping",
-	"travel"
+static const wchar_t *tcat_pretty_strings[] = {
+	L"uncategorised",
+	L"bills",
+	L"eating out",
+	L"gifts",
+	L"going out",
+	L"groceries",
+	L"interest",
+	L"leisure",
+	L"loans",
+	L"moving money",
+	L"job income",
+	L"rent",
+	L"shopping",
+	L"travel"
 };
 %}
 

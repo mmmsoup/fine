@@ -1,6 +1,8 @@
 #ifndef DATE_H
 #define DATE_H
 
+#include <wchar.h>
+
 #include "gperf/date_formats.h"
 #include "gperf/month_abbr.h"
 
@@ -13,10 +15,10 @@ typedef struct {
 	int days_since_epoch;
 } date_t;
 
-extern const char *const weekday_names[7];
-extern const char *const month_names[13];
+extern const wchar_t *const weekday_names[7];
+extern const wchar_t *const month_names[13];
 
-char *datestr(date_t, int);
+wchar_t *datestr(date_t, int);
 
 // days since 1970-01-01
 int days_since_epoch(int, int, int);
@@ -24,7 +26,7 @@ int days_since_epoch(int, int, int);
 // returns 0-6 representing weekdays starting with Sunday
 extern int weekday(int, int, int);
 
-extern const char *weekday_name(int);
+extern const wchar_t *weekday_name(int);
 
 // returns index of earlier date, i.e 0 or 1
 extern int earlier_date(date_t, date_t);

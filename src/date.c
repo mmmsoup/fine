@@ -1,29 +1,29 @@
 #include "date.h"
 
-const char *const weekday_names[7] = {
-	"Sunday",
-	"Monday",
-	"Tuesday",
-	"Wednesday",
-	"Thursday",
-	"Friday",
-	"Saturday"
+const wchar_t *const weekday_names[7] = {
+	L"Sunday",
+	L"Monday",
+	L"Tuesday",
+	L"Wednesday",
+	L"Thursday",
+	L"Friday",
+	L"Saturday"
 };
 
-const char *const month_names[13] = {
-	"the forbidden zeroth month", // i knew using 1-indexed months was a bad idea
-	"January",
-	"February",
-	"March",
-	"April",
-	"May",
-	"June",
-	"July",
-	"August",
-	"September",
-	"October",
-	"November",
-	"December"
+const wchar_t *const month_names[13] = {
+	L"the forbidden zeroth month", // i knew using 1-indexed months was a bad idea
+	L"January",
+	L"February",
+	L"March",
+	L"April",
+	L"May",
+	L"June",
+	L"July",
+	L"August",
+	L"September",
+	L"October",
+	L"November",
+	L"December"
 };
 
 const int month_lengths[] = {
@@ -39,8 +39,8 @@ const int date_format_lengths[] = {
 	4	// YYYY
 };
 
-char *datestr(date_t date, int format) {
-	static char str[11];
+wchar_t *datestr(date_t date, int format) {
+	static wchar_t str[11];
 	str[10] = '\0';
 	switch (format == DATEFMT_NONE ? DEFAULT_DATEFMT : format) {
 		case DATEFMT_DDMMYYYY:
@@ -121,7 +121,7 @@ extern inline int weekday(int day, int month, int year) {
 	return (day += month < 3 ? year-- : year - 2, 23*month/9 + day + 4 + year/4- year/100 + year/400)%7;
 }
 
-extern inline const char *weekday_name(int weekday) {
+extern inline const wchar_t *weekday_name(int weekday) {
 	return weekday_names[weekday];
 }
 

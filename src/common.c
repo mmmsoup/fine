@@ -1,11 +1,15 @@
 #include "common.h"
 
-int transaction_list_create(transaction_list_t *list, char *name, size_t size) {
+int transaction_list_create(transaction_list_t *list, char *name, char *bank, char *file, size_t size) {
 	list->transactions = malloc(sizeof(transaction_t)*size);
 	list->capacity = size;
 	list->size = 0;
 	list->name = malloc(sizeof(char)*(strlen(name)+1));
 	strcpy(list->name, name);
+	list->bank = malloc(sizeof(char)*(strlen(bank)+1));
+	strcpy(list->bank, bank);
+	list->file = malloc(sizeof(char)*(strlen(file)+1));
+	strcpy(list->file, file);
 	return EXIT_SUCCESS;
 }
 
@@ -16,8 +20,11 @@ int transaction_list_resize(transaction_list_t *list, size_t size) {
 }
 
 int transaction_list_destroy(transaction_list_t *list) {
+	for (int i = 0; i < list->size; i++) free(list->transactions[i].description);
 	free(list->transactions);
 	free(list->name);
+	free(list->bank);
+	free(list->file);
 	return EXIT_SUCCESS;
 }
 
