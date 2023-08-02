@@ -13,8 +13,7 @@ typedef enum {
 	TCAT_GROCERIES,
 	TCAT_INTEREST,
 	TCAT_LEISURE,
-	TCAT_LOANIN,
-	TCAT_LOANOUT,
+	TCAT_LOAN,
 	TCAT_MOVEMONEY,
 	TCAT_PAY,
 	TCAT_RENT,
@@ -24,9 +23,10 @@ typedef enum {
 
 #define NUM_CATEGORIES (sizeof(tcat_pretty_strings)/sizeof(char*))
 
+// is this actually necessary??
 #define TCAT_NETSAME	((1 << TCAT_NONE) | (1 << TCAT_MOVEMONEY))
-#define TCAT_NETMINUS	((1 << TCAT_BILLS) | (1 << TCAT_EATINGOUT) | (1 << TCAT_GOINGOUT) | (1 << TCAT_GROCERIES) | (1 << TCAT_LEISURE) | (1 << TCAT_LOANOUT) | (1 << TCAT_RENT) | (1 << TCAT_SHOPPING) | (1 << TCAT_TRAVEL))
-#define TCAT_NETPLUS	((1 << TCAT_GIFT) | (1 << TCAT_INTEREST) | (1 << TCAT_LOANIN) | (1 << TCAT_PAY))
+#define TCAT_NETMINUS	((1 << TCAT_BILLS) | (1 << TCAT_EATINGOUT) | (1 << TCAT_GOINGOUT) | (1 << TCAT_GROCERIES) | (1 << TCAT_LEISURE) | (1 << TCAT_RENT) | (1 << TCAT_SHOPPING) | (1 << TCAT_TRAVEL))
+#define TCAT_NETPLUS	((1 << TCAT_GIFT) | (1 << TCAT_INTEREST) | (1 << TCAT_PAY))
 
 typedef uint16_t tcat_t;
 
@@ -40,7 +40,6 @@ static const char *tcat_pretty_strings[] = {
 	"interest",
 	"leisure",
 	"loans",
-	"loan repayments",
 	"moving money",
 	"job income",
 	"rent",
@@ -64,8 +63,7 @@ goingout,	TCAT_GOINGOUT
 groceries,	TCAT_GROCERIES
 interest,	TCAT_INTEREST
 leisure,	TCAT_LEISURE
-loanin,		TCAT_LOANIN
-loanout,	TCAT_LOANOUT
+loan,		TCAT_LOAN
 movemoney,	TCAT_MOVEMONEY
 pay,		TCAT_PAY
 rent,		TCAT_RENT

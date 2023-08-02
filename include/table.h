@@ -1,6 +1,7 @@
 #ifndef TABLE_H
 #define TABLE_H
 
+#include <stdint.h>
 #include <stdio.h>
 
 #include "common.h"
@@ -18,6 +19,11 @@
 #define TABLE_CROSS '╋'
 */
 
-int print_table(transaction_list_collection_t, int, int);
+typedef enum {
+	TABLEFLAG_COLOUR = 0b00000001
+} table_flags;
+typedef uint8_t table_flags_t;
+
+int print_table(transaction_list_collection_t, int, int, table_flags_t);
 
 #endif

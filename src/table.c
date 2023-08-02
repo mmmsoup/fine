@@ -1,6 +1,6 @@
 #include "table.h"
 
-int print_table(transaction_list_collection_t collection, int division_type, int date_format) {
+int print_table(transaction_list_collection_t collection, int division_type, int date_format, table_flags_t flags) {
 	int num_date_divisions;
 	date_t *division_dates;
 	int (*get_date_division)(date_t, date_t);
@@ -83,26 +83,33 @@ int print_table(transaction_list_collection_t collection, int division_type, int
 	strcpy(dateheading, date_division_headings[division_type]);
 	memset(dateheading+strlen(date_division_headings[division_type]), ' ', dateheadinglen-strlen(date_division_headings[division_type]));
 	dateheading[dateheadinglen] = '\0';
-	const char totalheading[] = { ' ', TABLE_VLINE, ' ', 't', 'o', 't', 'a', 'l', ' ', ' ', ' ', ' ', '\0' };
+	const char *totalheading = "total    ";
 	char *spaces = malloc(sizeof(char)*MIN_COL_WIDTH);
 	memset(spaces, ' ', MIN_COL_WIDTH);
-	int linewidth = strlen(dateheading) + strlen(totalheading);
+	int linewidth = strlen(dateheading) + strlen(totalheading) + 3;
+	if (flags & TABLEFLAG_COLOUR) printf("\e[1m");
 	printf(dateheading);
+	if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
 	for (int i = 0; i < NUM_CATEGORIES; i++) {
 		printf(" %c ", TABLE_VLINE);
 		colwidths[i] = strlen(tcat_pretty_strings[i]);
+		if (flags & TABLEFLAG_COLOUR) printf("\e[1m");
 		if (colwidths[i] < MIN_COL_WIDTH) {
 			printf("%s%.*s", tcat_pretty_strings[i], MIN_COL_WIDTH-colwidths[i], spaces);
 			colwidths[i] = MIN_COL_WIDTH;
 		} else {
 			printf(tcat_pretty_strings[i]);
 		}
+		if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
 		colwidths[i] += 2;
 		linewidth += colwidths[i] + 1;
 	}
 	spaces = realloc(spaces, sizeof(char)*linewidth);
 	memset(spaces+MIN_COL_WIDTH, ' ', linewidth-MIN_COL_WIDTH);
+	printf(" %c ", TABLE_VLINE);
+	if (flags & TABLEFLAG_COLOUR) printf("\e[1m");
 	printf("%s\n", totalheading);
+	if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
 
 	char hrule[linewidth+2];
 	memset(hrule, TABLE_HLINE, linewidth);
@@ -131,26 +138,63 @@ int print_table(transaction_list_collection_t collection, int division_type, int
 			memset(cellstr, ' ', colwidths[j]);
 			if (celltotal < 0) {
 				len = intstrlen((-1*celltotal)/100) + 5;
-				printf("%.*s-£%.02f %c", colwidths[j]-len-1, spaces, (-1*celltotal)/100.0f, TABLE_VLINE);
+				if (flags & TABLEFLAG_COLOUR) printf("\e[31m");
+				printf("%.*s-£%.02f", colwidths[j]-len-1, spaces, (-1*celltotal)/100.0f);
+				if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
 			} else {
 				len = intstrlen(celltotal/100) + 4;
-				printf("%.*s£%.02f %c", colwidths[j]-len-1, spaces, celltotal/100.0f, TABLE_VLINE);
+				if (celltotal == 0) {
+					if (flags & TABLEFLAG_COLOUR) printf("\e[30m");
+					printf("%.*s£0.00", colwidths[j]-6, spaces);
+					if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
+				} else {
+					if (flags & TABLEFLAG_COLOUR) printf("\e[32m");
+					printf("%.*s£%.02f", colwidths[j]-len-1, spaces, celltotal/100.0f);
+					if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
+				}
 			}
+			printf(" %c", TABLE_VLINE);
 			rowtotal += j == TCAT_MOVEMONEY ? 0 : celltotal;
 		}
 		if (rowtotal < 0) {
-			printf("%.*s-£%.02f\n", (int)(strlen(totalheading)-intstrlen((-1*rowtotal)/100)-7), spaces, (-1*rowtotal)/100.0f);
+			if (flags & TABLEFLAG_COLOUR) printf("\e[31m");
+			printf("%.*s-£%.02f", (int)(strlen(totalheading)-intstrlen((-1*rowtotal)/100)-4), spaces, (-1*rowtotal)/100.0f);
+			if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
 		} else {
-			printf("%.*s£%.02f\n", (int)(strlen(totalheading)-intstrlen(rowtotal/100)-6), spaces, rowtotal/100.0f);
+			if (rowtotal == 0) {
+				if (flags & TABLEFLAG_COLOUR) printf("\e[30m");
+				printf("%.*s£0.00", (int)(strlen(totalheading)-4), spaces);
+				if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
+			} else {
+				if (flags & TABLEFLAG_COLOUR) printf("\e[32m");
+				printf("%.*s£%.02f", (int)(strlen(totalheading)-intstrlen(rowtotal/100)-3), spaces, rowtotal/100.0f);
+				if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
+			}
 		}
+		printf("\n");
 		grandtotal += rowtotal;
 	}
 
+	if (flags & TABLEFLAG_COLOUR) printf("\e[1m");
+	printf("%.*stotal", pos-6, spaces);
+	if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
+	printf(" %c", TABLE_VLINE);
 	if (grandtotal < 0) {
-		printf("%.*stotal %c%.*s-£%.02f\n", pos-6, spaces, TABLE_VLINE, (int)(strlen(totalheading)-intstrlen((-1*grandtotal)/100)-7), spaces, (-1*grandtotal)/100.0f);
+		if (flags & TABLEFLAG_COLOUR) printf("\e[31m");
+		printf("%.*s-£%.02f", (int)(strlen(totalheading)-intstrlen((-1*grandtotal)/100)-4), spaces, (-1*grandtotal)/100.0f);
+		if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
 	} else {
-		printf("%.*stotal %c%.*s£%.02f\n", pos-6, spaces, TABLE_VLINE, (int)(strlen(totalheading)-intstrlen(grandtotal/100)-6), spaces, grandtotal/100.0f);
+		if (grandtotal == 0) {
+			if (flags & TABLEFLAG_COLOUR) printf("\e[30m");
+			printf("%.*s£0.00", (int)(strlen(totalheading)-intstrlen(grandtotal/100)-3), spaces);
+			if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
+		} else {
+			if (flags & TABLEFLAG_COLOUR) printf("\e[32m");
+			printf("%.*s£%.02f", (int)(strlen(totalheading)-intstrlen(grandtotal/100)-3), spaces, grandtotal/100.0f);
+			if (flags & TABLEFLAG_COLOUR) printf("\e[0m");
+		}
 	}
+	printf("\n");
 
 	free(spaces);
 

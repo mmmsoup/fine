@@ -16,6 +16,9 @@ int main(int argc, char **argv) {
 	int output_type = OUTPUT_TABLE;
 	int date_format = DATEFMT_NONE;
 	int division_type = DIV_MONTHS;
+
+	table_flags_t table_flags = TABLEFLAG_COLOUR;
+
 	catrule_list_t rules;
 	transaction_list_collection_t collection;
 	collection.num_accounts = 0;
@@ -35,64 +38,98 @@ int main(int argc, char **argv) {
 		{ "natwest",		required_argument,	0,	0 },
 		{ 0, 0, 0, 0 }
 	};
-	const char *short_options = "c:d:D:no:";
+	const char *short_options = "+c:d:D:no:";
 	while (1) {
-		int this_option_optind = optind ? optind : 1;
-		int option_index = 0;
 		int status = EXIT_SUCCESS;
-		gsiv_t *gsiv;
-		
-		c = getopt_long(argc, argv, short_options, long_options, &option_index);
-		if (c == -1) break;
-		switch (c) {
-			case 0:
-				if (strcmp(long_options[option_index].name, "nationwide") == 0) {
-					status = parse_nationwide(optarg, transactions+collection.num_accounts);
-				} else if (strcmp(long_options[option_index].name, "natwest") == 0) {
-					status = parse_natwest(optarg, transactions+collection.num_accounts);
-				} else break;
+		int last_bankname_index = -1;
+		while (1) {
+			int this_option_optind = optind ? optind : 1;
+			int option_index = 0;
+			status = EXIT_SUCCESS;
+			gsiv_t *gsiv;
+			
+			c = getopt_long(argc, argv, short_options, long_options, &option_index);
+			if (c == -1) break;
+			switch (c) {
+				case 0:
+					if (strcmp(long_options[option_index].name, "nationwide") == 0) {
+						status = parse_nationwide(optarg, transactions+collection.num_accounts);
+					} else if (strcmp(long_options[option_index].name, "natwest") == 0) {
+						status = parse_natwest(optarg, transactions+collection.num_accounts);
+					} else break;
 
-				if (status == EXIT_SUCCESS) {
-					collection.num_accounts++;
-				} else {
-					fprintf(stderr, "error loading transaction file '%s'", optarg);
-				}
-				break;
-			case 'c':
-				if (load_categorisation_rules(&rules, optarg) == EXIT_SUCCESS) config_loaded = 1;
-				break;
-			case 'd':
-				gsiv = (gsiv_t*)date_format_lookup(optarg, strlen(optarg));
-				if (gsiv == NULL) {
-					fprintf(stderr, "unknown date format '%s'\n", optarg);
+					last_bankname_index = option_index;
+					if (status == EXIT_SUCCESS) {
+						collection.num_accounts++;
+					} else {
+						fprintf(stderr, "error loading transaction file '%s'", optarg);
+					}
+					break;
+				case 'c':
+					if (load_categorisation_rules(&rules, optarg) == EXIT_SUCCESS) config_loaded = 1;
+					break;
+				case 'd':
+					gsiv = (gsiv_t*)date_format_lookup(optarg, strlen(optarg));
+					if (gsiv == NULL) {
+						fprintf(stderr, "unknown date format '%s'\n", optarg);
+						exit(EXIT_FAILURE);
+					} else {
+						date_format = gsiv->value;
+					}
+					break;
+				case 'D':
+					gsiv = (gsiv_t*)division_type_lookup(optarg, strlen(optarg));
+					if (gsiv == NULL) {
+						fprintf(stderr, "unknown division type '%s'\n", optarg);
+						exit(EXIT_FAILURE);
+					} else {
+						division_type = gsiv->value;
+					}
+					break;
+				case 'o':
+					if (strcmp(optarg, "table") == 0) output_type = OUTPUT_TABLE;
+					else if (strcmp(optarg, "uncategorised") == 0) output_type = OUTPUT_UNCATEGORISED;
+					else {
+						fprintf(stderr, "unknown output type '%s'\n", optarg);
+						exit(EXIT_FAILURE);
+					}
+					break;
+				case 'n':
+					table_flags |= TABLEFLAG_COLOUR;
+					table_flags -= TABLEFLAG_COLOUR;
+					break;
+				case '?':
+					break;
+				default:
+					fprintf(stderr, "hmmm this definitely shouldn't be happening whoops\n");
 					exit(EXIT_FAILURE);
+			}
+		}
+
+		if (optind >= argc) {
+			break;
+		} else {
+			for (int i = optind; i < argc; i++) {
+				if (argv[i][0] == '-') {
+					optind = 0;
+					argv += i-1;
+					argc -= i-1;
+					break;
 				} else {
-					date_format = gsiv->value;
+					if (last_bankname_index == -1) break;
+					else if (strcmp(long_options[last_bankname_index].name, "nationwide") == 0) {
+						status = parse_nationwide(argv[i], transactions+collection.num_accounts);
+					} else if (strcmp(long_options[last_bankname_index].name, "natwest") == 0) {
+						status = parse_natwest(argv[i], transactions+collection.num_accounts);
+					} else break;
+
+					if (status == EXIT_SUCCESS) {
+						collection.num_accounts++;
+					} else {
+						fprintf(stderr, "error loading transaction file '%s'", argv[i]);
+					}
 				}
-				break;
-			case 'D':
-				gsiv = (gsiv_t*)division_type_lookup(optarg, strlen(optarg));
-				if (gsiv == NULL) {
-					fprintf(stderr, "unknown division type '%s'\n", optarg);
-					exit(EXIT_FAILURE);
-				} else {
-					division_type = gsiv->value;
-				}
-				break;
-			case 'o':
-				if (strcmp(optarg, "table") == 0) output_type = OUTPUT_TABLE;
-				else if (strcmp(optarg, "uncategorised") == 0) output_type = OUTPUT_UNCATEGORISED;
-				else {
-					fprintf(stderr, "unknown output type '%s'\n", optarg);
-					exit(EXIT_FAILURE);
-				}
-				break;
-			case 'n':
-			case '?':
-				break;
-			default:
-				fprintf(stderr, "hmmm this definitely shouldn't be happening whoops\n");
-				exit(EXIT_FAILURE);
+			}
 		}
 	}
 
@@ -112,7 +149,7 @@ int main(int argc, char **argv) {
 
 	switch (output_type) {
 		case OUTPUT_TABLE:
-			print_table(collection, division_type, date_format);
+			print_table(collection, division_type, date_format, table_flags);
 			break;
 		case OUTPUT_UNCATEGORISED:
 			for (int i = 0; i < collection.num_accounts; i++) {
