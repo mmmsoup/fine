@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <regex.h>
 #include <stdlib.h>
+#include <wchar.h>
 
 #include "common.h"
 #include "csv.h"

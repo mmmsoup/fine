@@ -79,37 +79,30 @@ int main(int argc, char **argv) {
 				}
 			} else {
 				// banks
-				int status = EXIT_SUCCESS;
-				int j;
-				if (strcmp(argv[i], "nationwide") == 0) {
-					ASSERT_OPTION_HAS_ARGUMENT(argc, argv, i);
-					for (j = i+1; j < argc; j++) {
-						if (argv[j][0] == '-' && argv[j][1] == '-') {
-							i = j;
-							break;
-						} else if (parse_nationwide(argv[j], transactions+collection.num_accounts) == EXIT_SUCCESS) {
-							collection.num_accounts++;
-						} else {
-							fwprintf(stderr, L"error loading transaction file '%s'", argv[j]);
-						}
-					}
-				} else if (strcmp(argv[i], "natwest") == 0) {
-					ASSERT_OPTION_HAS_ARGUMENT(argc, argv, i);
-					for (j = i+1; j < argc; j++) {
-						if (argv[j][0] == '-' && argv[j][1] == '-') {
-							i = j;
-							break;
-						} else if (parse_natwest(argv[j], transactions+collection.num_accounts) == EXIT_SUCCESS) {
-							collection.num_accounts++;
-						} else {
-							fwprintf(stderr, L"error loading transaction file '%s'", argv[j]);
-						}
-					}
-				} else {
+				
+				int (*parse)(char *, transaction_list_t *);
+				if (strcmp(argv[i], "cash") == 0)				parse = parse_cash;
+				else if (strcmp(argv[i], "nationwide") == 0)	parse = parse_nationwide;
+				else if (strcmp(argv[i], "natwest") == 0)		parse = parse_natwest;
+				else {
 					fwprintf(stderr, L"unknown option '%s'", argv[i]);
 					return EXIT_FAILURE;
 				}
 
+				ASSERT_OPTION_HAS_ARGUMENT(argc, argv, i);
+
+				int status = EXIT_SUCCESS;
+				int j;
+				for (j = i+1; j < argc; j++) {
+					if (argv[j][0] == '-' && argv[j][1] == '-') {
+						i = j;
+						break;
+					} else if (parse(argv[j], transactions+collection.num_accounts) == EXIT_SUCCESS) {
+						collection.num_accounts++;
+					} else {
+						fwprintf(stderr, L"error loading transaction file '%s'\n", argv[j]);
+					}
+				}
 				if (j == argc) i = j;
 				continue;
 			}

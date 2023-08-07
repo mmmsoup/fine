@@ -53,8 +53,15 @@ int parse_string_price(char *str) {
 	int value = 0;
 
 	// after decimal point
-	for (int i = 1; i < length-separator_index; i++) {
-		value += (str[length-i] - 0x30) * exponent(10, i-1);
+	switch (length-separator_index) {
+		case 3:
+			value += (str[separator_index+2] - 0x30);
+		case 2:
+			value += (str[separator_index+1] - 0x30) * 10;
+		case 0:
+			break;
+		default:
+			return EXIT_FAILURE;
 	}
 
 	// before decimal point

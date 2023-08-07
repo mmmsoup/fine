@@ -60,7 +60,7 @@ int csv_next_line(csv_t *csv, csv_line_t *line) {
 			num_fields++;
 		} else if (rawline[i] == '"') in_quotes = 1;
 	}
-	field_indices[num_fields] = bytes_read; // in case we need to remove a final '"'
+	field_indices[num_fields] = bytes_read+1; // in case we need to remove a final '"'
 
 	line->num_fields = num_fields;
 	line->fields = malloc(sizeof(char*)*num_fields);

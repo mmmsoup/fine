@@ -1,5 +1,53 @@
 #include "banks.h"
 
+int parse_cash(char *path, transaction_list_t *list) {
+	csv_t csv;
+	if (csv_open(&csv, path) != EXIT_SUCCESS) {
+		fprintf(stderr, "csv_open(): %s\n", strerror(errno));
+		return errno;
+	}
+
+	transaction_list_create(list, "Cash Transactions", "Cash", path, TRANSACTIONS_ALLOC_NUM);
+
+	csv_line_t line;
+	transaction_t *transaction = list->transactions;
+	while (csv_next_line(&csv, &line)) {
+		if (list->size == list->capacity) {
+			transaction_list_resize(list, list->capacity+TRANSACTIONS_ALLOC_NUM);
+			transaction = list->transactions + list->size;
+		}
+
+		transaction->date.year	= (line.fields[0][0]-0x30)*1000 + (line.fields[0][1]-0x30)*100 + (line.fields[0][2]-0x30)*10 + (line.fields[0][3]-0x30);
+		transaction->date.month	= (line.fields[0][5]-0x30)*10 + (line.fields[0][6]-0x30);
+		transaction->date.day	= (line.fields[0][8]-0x30)*10 + (line.fields[0][9]-0x30);
+		transaction->date.days_since_epoch = days_since_epoch(transaction->date.day, transaction->date.month, transaction->date.year);
+
+		transaction->amount = parse_string_price(line.fields[1]);
+		transaction->type = transaction->amount < 0 ? TTYPE_CASH_DEBIT : TTYPE_CASH_CREDIT;
+
+		transaction->description = malloc(sizeof(char)*(strlen(line.fields[2])+1));
+		strcpy(transaction->description, line.fields[2]);
+
+		transaction->category = TCAT_NONE;
+		if (line.num_fields == 4) {
+			const gsiv_t *gsiv = tcat_lookup(line.fields[3], strlen(line.fields[3]));
+			if (gsiv == NULL) fwprintf(stderr, L"invalid transaction category '%s'\n", line.fields[3]);
+			else transaction->category = gsiv->value;
+		}
+
+		csv_free_line(&line);
+		list->size++;
+		transaction++;
+	}
+
+	csv_close(&csv);
+
+	list->daterange[0] = list->transactions[0].date;
+	list->daterange[1] = list->transactions[list->size-1].date;
+
+	return EXIT_SUCCESS;
+}
+
 int parse_nationwide(char *path, transaction_list_t *list) {
 	csv_t csv;
 	if (csv_open(&csv, path) != EXIT_SUCCESS) {
@@ -34,9 +82,9 @@ int parse_nationwide(char *path, transaction_list_t *list) {
 		strcpy(transaction->description, line.fields[2]);
 		transaction->category = TCAT_NONE;
 
-		transaction->date.day = (line.fields[0][0]-0x30)*10 + (line.fields[0][1]-0x30);
-		transaction->date.month = month_abbr_lookup(line.fields[0]+3)->value;
-		transaction->date.year = (line.fields[0][7]-0x30)*1000 + (line.fields[0][8]-0x30)*100 + (line.fields[0][9]-0x30)*10 + (line.fields[0][10]-0x30);
+		transaction->date.day	= (line.fields[0][0]-0x30)*10 + (line.fields[0][1]-0x30);
+		transaction->date.month	= month_abbr_lookup(line.fields[0]+3)->value;
+		transaction->date.year	= (line.fields[0][7]-0x30)*1000 + (line.fields[0][8]-0x30)*100 + (line.fields[0][9]-0x30)*10 + (line.fields[0][10]-0x30);
 		transaction->date.days_since_epoch = days_since_epoch(transaction->date.day, transaction->date.month, transaction->date.year);
 
 		csv_free_line(&line);
@@ -96,9 +144,9 @@ int parse_natwest(char *path, transaction_list_t *list) {
 		transaction->description = malloc(sizeof(char)*(strlen(line.fields[2])+1));
 		strcpy(transaction->description, line.fields[2]);
 
-		transaction->date.day = (line.fields[0][0]-0x30)*10 + (line.fields[0][1]-0x30);
-		transaction->date.month = month_abbr_lookup(line.fields[0]+3)->value;
-		transaction->date.year = (line.fields[0][7]-0x30)*1000 + (line.fields[0][8]-0x30)*100 + (line.fields[0][9]-0x30)*10 + (line.fields[0][10]-0x30);
+		transaction->date.day	= (line.fields[0][0]-0x30)*10 + (line.fields[0][1]-0x30);
+		transaction->date.month	= month_abbr_lookup(line.fields[0]+3)->value;
+		transaction->date.year	= (line.fields[0][7]-0x30)*1000 + (line.fields[0][8]-0x30)*100 + (line.fields[0][9]-0x30)*10 + (line.fields[0][10]-0x30);
 		transaction->date.days_since_epoch = days_since_epoch(transaction->date.day, transaction->date.month, transaction->date.year);
 
 		csv_free_line(&line);
