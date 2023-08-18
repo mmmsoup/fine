@@ -29,6 +29,11 @@ int csv_next_line(csv_t *csv, csv_line_t *line) {
 	if (rawline[bytes_read-1] == '\n') {
 		rawline[bytes_read-1] = '\0';
 		bytes_read--;
+
+		if (rawline[bytes_read-1] == '\r') {
+			rawline[bytes_read-1] = '\0';
+			bytes_read--;
+		}
 	}
 	short field_indices[bytes_read];
 	field_indices[0] = 0;

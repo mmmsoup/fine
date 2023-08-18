@@ -64,6 +64,13 @@ int load_categorisation_rules(catrule_list_t *list, char *path) {
 	return EXIT_SUCCESS;
 }
 
+int free_categorisation_rules(catrule_list_t *list) {
+	for (int i = 0; i < list->size; i++) {
+		regfree(&(list->rules[i].regex));
+	}
+	return EXIT_SUCCESS;
+}
+
 tcat_t categorise_transaction(catrule_list_t *list, transaction_t *transaction) {
 	if (transaction->category != TCAT_NONE) return transaction->category;
 

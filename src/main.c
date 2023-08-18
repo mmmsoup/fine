@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <wchar.h>
 
+#include "balance.h"
 #include "banks.h"
 #include "categorisation.h"
 #include "common.h"
@@ -19,7 +20,7 @@
 int main(int argc, char **argv) {
 	setlocale(LC_ALL, "en_GB.UTF-8");
 
-	const enum { OUTPUT_TABLE, OUTPUT_UNCATEGORISED } output_types;
+	const enum { OUTPUT_TABLE, OUTPUT_UNCATEGORISED, OUTPUT_BALANCE } output_types;
 
 	int output_type = OUTPUT_TABLE;
 	int date_format = DATEFMT_NONE;
@@ -73,6 +74,7 @@ int main(int argc, char **argv) {
 				i++;
 				if (strcmp(argv[i], "table") == 0) output_type = OUTPUT_TABLE;
 				else if (strcmp(argv[i], "uncategorised") == 0) output_type = OUTPUT_UNCATEGORISED;
+				else if (strcmp(argv[i], "balance") == 0) output_type = OUTPUT_BALANCE;
 				else {
 					fwprintf(stderr, L"unknown output type '%s'\n", argv[i]);
 					return EXIT_FAILURE;
@@ -113,11 +115,11 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	collection.daterange[0] = transactions[0].daterange[0];
-	collection.daterange[1] = transactions[0].daterange[1];
+	collection.daterange[0] = transactions[0].transactions[0].date;
+	collection.daterange[1] = transactions[0].transactions[transactions[0].size-1].date;
 	for (int i = 1; i < collection.num_accounts; i++) {
-		if (earlier_date(collection.daterange[0], transactions[i].daterange[0])) collection.daterange[0] = transactions[i].daterange[0];
-		if (earlier_date(transactions[i].daterange[1], collection.daterange[1])) collection.daterange[1] = transactions[i].daterange[1];
+		if (earlier_date(collection.daterange[0], transactions[i].transactions[0].date)) collection.daterange[0] = transactions[i].transactions[0].date;
+		if (earlier_date(transactions[i].transactions[transactions[i].size-1].date, collection.daterange[1])) collection.daterange[1] = transactions[i].transactions[transactions[i].size-1].date;
 	}
 
 	for (int i = 0; i < collection.num_accounts; i++) {
@@ -127,27 +129,37 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	free_categorisation_rules(&rules);
+
 	switch (output_type) {
+		case OUTPUT_BALANCE:
+			print_balance(collection, flags);
+			break;
 		case OUTPUT_TABLE:
 			print_table(collection, division_type, date_format, flags);
 			break;
 		case OUTPUT_UNCATEGORISED:
+			const wchar_t *esc_bold		= (flags & FLAG_COLOUR) ? ESC_BOLD		: ESC_NONE;
+			const wchar_t *esc_positive	= (flags & FLAG_COLOUR) ? ESC_POSITIVE	: ESC_NONE;
+			const wchar_t *esc_negative	= (flags & FLAG_COLOUR) ? ESC_NEGATIVE	: ESC_NONE;
+			const wchar_t *esc_zero		= (flags & FLAG_COLOUR) ? ESC_ZERO		: ESC_NONE;
+			const wchar_t *esc_end		= (flags & FLAG_COLOUR) ? ESC_END		: ESC_NONE;
+
 			for (int i = 0; i < collection.num_accounts; i++) {
 				int header_printed = 0;
 				transaction_list_t *tlist = transactions+i;
 				for (int j = 0; j < tlist->size; j++) {
 					if (tlist->transactions[j].category == TCAT_NONE) {
 						if (!header_printed) {
-							if (flags & FLAG_COLOUR) wprintf(L"%lc%lc \e[1m%s: %s\e[0m (%s)\n", TABLE_TOPLEFT_BOLD, TABLE_HLINE_BOLD, tlist->bank, tlist->name, tlist->file);
-							else wprintf(L"%lc%lc %s: %s (%s)\n", TABLE_TOPLEFT, TABLE_HLINE, tlist->bank, tlist->name, tlist->file);
+							wprintf(L"%lc%lc %ls%s: %s%ls (%s)\n", TABLE_TOPLEFT_BOLD, TABLE_HLINE_BOLD, esc_bold, tlist->bank, tlist->name, esc_end, tlist->file);
 							header_printed = 1;
 						}
 
 						wprintf(L"%lc %ls %s ", TABLE_VLINE_BOLD, datestr(tlist->transactions[j].date, date_format), get_ttype_pretty_string(tlist->transactions[j].type));
 						if (tlist->transactions[j].amount < 0) {
-							wprintf(L"-£%.02f\t", (-1*(tlist->transactions[j].amount))/100.0f);
+							wprintf(L"%ls-£%.02f%ls\t", esc_negative, (-1*(tlist->transactions[j].amount))/100.0f, esc_end);
 						} else {
-							wprintf(L"£%.02f\t", (tlist->transactions[j].amount)/100.0f);
+							wprintf(L"%ls£%.02f%ls\t", esc_positive, (tlist->transactions[j].amount)/100.0f, esc_end);
 						}
 						wprintf(L" %s\n", tlist->transactions[j].description);
 					}

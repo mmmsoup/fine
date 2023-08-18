@@ -27,6 +27,7 @@ typedef struct {
 } catrule_list_t;
 
 int load_categorisation_rules(catrule_list_t *, char *);
+int free_categorisation_rules(catrule_list_t *);
 
 tcat_t categorise_transaction(catrule_list_t *, transaction_t *);
 

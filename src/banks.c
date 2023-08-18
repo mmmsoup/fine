@@ -8,6 +8,7 @@ int parse_cash(char *path, transaction_list_t *list) {
 	}
 
 	transaction_list_create(list, "Cash Transactions", "Cash", path, TRANSACTIONS_ALLOC_NUM);
+	list->balance = 0;
 
 	csv_line_t line;
 	transaction_t *transaction = list->transactions;
@@ -35,15 +36,14 @@ int parse_cash(char *path, transaction_list_t *list) {
 			else transaction->category = gsiv->value;
 		}
 
+		list->balance += transaction->amount;
+
 		csv_free_line(&line);
 		list->size++;
 		transaction++;
 	}
 
 	csv_close(&csv);
-
-	list->daterange[0] = list->transactions[0].date;
-	list->daterange[1] = list->transactions[list->size-1].date;
 
 	return EXIT_SUCCESS;
 }
@@ -58,6 +58,7 @@ int parse_nationwide(char *path, transaction_list_t *list) {
 	csv_line_t line;
 	csv_next_line(&csv, &line);
 	transaction_list_create(list, line.fields[1], "Nationwide", path, TRANSACTIONS_ALLOC_NUM);
+	csv_free_line(&line);
 
 	csv_skip_lines(&csv, 4);
 
@@ -87,15 +88,14 @@ int parse_nationwide(char *path, transaction_list_t *list) {
 		transaction->date.year	= (line.fields[0][7]-0x30)*1000 + (line.fields[0][8]-0x30)*100 + (line.fields[0][9]-0x30)*10 + (line.fields[0][10]-0x30);
 		transaction->date.days_since_epoch = days_since_epoch(transaction->date.day, transaction->date.month, transaction->date.year);
 
+		list->balance = parse_string_price(line.fields[5]+1);
+
 		csv_free_line(&line);
 		list->size++;
 		transaction++;
 	}
 
 	csv_close(&csv);
-
-	list->daterange[0] = list->transactions[0].date;
-	list->daterange[1] = list->transactions[list->size-1].date;
 
 	return EXIT_SUCCESS;
 }
@@ -112,6 +112,7 @@ int parse_natwest(char *path, transaction_list_t *list) {
 	csv_line_t line;
 	csv_next_line(&csv, &line);
 	transaction_list_create(list, line.fields[6], "Natwest", path, TRANSACTIONS_ALLOC_NUM);
+	list->balance = parse_string_price(line.fields[4]);
 
 	transaction_t *transaction = list->transactions;
 	do {
@@ -156,8 +157,12 @@ int parse_natwest(char *path, transaction_list_t *list) {
 
 	csv_close(&csv);
 
-	list->daterange[0] = list->transactions[list->size-1].date;
-	list->daterange[1] = list->transactions[0].date;
+	transaction_t temp;
+	for (int i = 0; i < list->size/2; i++) {
+		memcpy(&temp, &(list->transactions[i]), sizeof(transaction_t));
+		memcpy(&(list->transactions[i]), &(list->transactions[list->size-i-1]), sizeof(transaction_t));
+		memcpy(&(list->transactions[list->size-i-1]), &temp, sizeof(transaction_t));
+	}
 
 	return EXIT_SUCCESS;
 }

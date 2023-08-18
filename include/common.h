@@ -14,6 +14,13 @@
 #define MAX(a,b) (a < b ? b : a)
 #define MIN(a,b) (a > b ? b : a)
 
+#define ESC_BOLD		L"\e[1m"
+#define ESC_POSITIVE	L"\e[32m"
+#define ESC_NEGATIVE	L"\e[31m"
+#define ESC_ZERO		L"\e[30m"
+#define ESC_END			L"\e[0m"
+#define ESC_NONE		L""
+
 typedef enum {
 	FLAG_COLOUR = 0b00000001
 } flags;
@@ -27,6 +34,7 @@ typedef struct {
 	tcat_t category;
 } transaction_t;
 
+// transactions always in date order (oldest to newest)
 typedef struct {
 	transaction_t *transactions;
 	char *name;
@@ -34,7 +42,7 @@ typedef struct {
 	char *file;
 	size_t size;
 	size_t capacity;
-	date_t daterange[2]; // 0: earliest, 1: latest
+	int balance;
 } transaction_list_t;
 
 typedef struct {

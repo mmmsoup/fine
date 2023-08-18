@@ -79,16 +79,9 @@ int print_table(transaction_list_collection_t collection, int division_type, int
 		L"wk comm"
 	};
 
-	const wchar_t *ESC_BOLD		= L"\e[1m";
-	const wchar_t *ESC_POSITIVE	= L"\e[32m";
-	const wchar_t *ESC_NEGATIVE	= L"\e[31m";
-	const wchar_t *ESC_ZERO		= L"\e[30m";
-	const wchar_t *ESC_END		= L"\e[0m";
-	const wchar_t *ESC_NONE		= L"";
-
 	const wchar_t *esc_bold		= (flags & FLAG_COLOUR) ? ESC_BOLD		: ESC_NONE;
-	const wchar_t *esc_positive	= (flags & FLAG_COLOUR) ? ESC_POSITIVE : ESC_NONE;
-	const wchar_t *esc_negative	= (flags & FLAG_COLOUR) ? ESC_NEGATIVE : ESC_NONE;
+	const wchar_t *esc_positive	= (flags & FLAG_COLOUR) ? ESC_POSITIVE	: ESC_NONE;
+	const wchar_t *esc_negative	= (flags & FLAG_COLOUR) ? ESC_NEGATIVE	: ESC_NONE;
 	const wchar_t *esc_zero		= (flags & FLAG_COLOUR) ? ESC_ZERO		: ESC_NONE;
 	const wchar_t *esc_end		= (flags & FLAG_COLOUR) ? ESC_END		: ESC_NONE;
 

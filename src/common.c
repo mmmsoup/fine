@@ -61,7 +61,7 @@ int parse_string_price(char *str) {
 		case 0:
 			break;
 		default:
-			return EXIT_FAILURE;
+			return 0;
 	}
 
 	// before decimal point
