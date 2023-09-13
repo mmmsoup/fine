@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
 				// banks
 				
 				int (*parse)(char *, transaction_list_t *);
-				if (strcmp(argv[i], "cash") == 0)				parse = parse_cash;
+				if (strcmp(argv[i], "stdfmt") == 0)				parse = parse_stdfmt;
 				else if (strcmp(argv[i], "nationwide") == 0)	parse = parse_nationwide;
 				else if (strcmp(argv[i], "natwest") == 0)		parse = parse_natwest;
 				else {

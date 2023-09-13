@@ -1,16 +1,18 @@
 #include "banks.h"
 
-int parse_cash(char *path, transaction_list_t *list) {
+int parse_stdfmt(char *path, transaction_list_t *list) {
 	csv_t csv;
 	if (csv_open(&csv, path) != EXIT_SUCCESS) {
 		fprintf(stderr, "csv_open(): %s\n", strerror(errno));
 		return errno;
 	}
 
-	transaction_list_create(list, "Cash Transactions", "Cash", path, TRANSACTIONS_ALLOC_NUM);
+	csv_line_t line;
+	csv_next_line(&csv, &line);
+
+	transaction_list_create(list, line.fields[0], "Standard Format", path, TRANSACTIONS_ALLOC_NUM);
 	list->balance = 0;
 
-	csv_line_t line;
 	transaction_t *transaction = list->transactions;
 	while (csv_next_line(&csv, &line)) {
 		if (list->size == list->capacity) {
