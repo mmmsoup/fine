@@ -24,7 +24,7 @@ int print_table(transaction_list_collection_t collection, int division_type, int
 			for (int i = 0; i < num_date_divisions; i++) {
 				division_dates[i].day = 1;
 				division_dates[i].month = ((collection.daterange[0].month + i - 1) % 12) + 1;
-				division_dates[i].year = collection.daterange[0].year + (collection.daterange[0].month + i) / 12;
+				division_dates[i].year = collection.daterange[0].year + (collection.daterange[0].month + i - 1) / 12;
 			}
 			date_format = date_format == DATEFMT_NONE ? DATEFMT_MMMYYYY : date_format;
 			break;

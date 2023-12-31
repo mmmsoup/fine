@@ -1,9 +1,11 @@
 #!/bin/python3
 
-from lidlplus import LidlPlusApi
 import json
 import os
 import sys
+
+# https://github.com/Andre0512/lidl-plus
+from lidlplus import LidlPlusApi
 
 step = 1;
 def printstep(message):

@@ -6,13 +6,17 @@
 #define ttype_lookup_nationwide(str, len) { _ttype_lookup_nationwide(str, 6) }
 
 /*
-	Transfer from
-	Visa purchase
-	Contactless Payment
-	Payment to
-	Visa Credit
-	Cash credit
+	ATM Withdrawal ...
 	Bank credit ...
+	Cash credit
+	Cheque deposit
+	Contactless Payment
+	Direct debit ...
+	Payment to
+	Transfer from
+	Visa cash withdrawal ...
+	Visa Credit
+	Visa purchase
 */
 %}
 
@@ -23,11 +27,15 @@
 struct gsiv_t;
 %%
 ####
-Transf,		TTYPE_ACCT_CREDIT	
-Visa p,		TTYPE_CARD_DEBIT	
+ATM Wi,		TTYPE_ACCT_DEBIT
+Bank c,		TTYPE_ACCT_CREDIT	
+Bank d,		TTYPE_ACCT_DEBIT
+Cash c,		TTYPE_ACCT_CREDIT	
+Cheque,		TTYPE_ACCT_CREDIT
 Contac,		TTYPE_CARD_DEBIT	
 Paymen,		TTYPE_ACCT_DEBIT	
+Transf,		TTYPE_ACCT_CREDIT	
+Visa c,		TTYPE_CARD_DEBIT
 Visa C,		TTYPE_CARD_CREDIT	
-Cash c,		TTYPE_ACCT_CREDIT	
-Bank c,		TTYPE_ACCT_CREDIT	
+Visa p,		TTYPE_CARD_DEBIT	
 ####
