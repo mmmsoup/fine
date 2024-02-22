@@ -1,98 +1,95 @@
 // ==UserScript==
-// @name					Sainsbury's Bank CSV Export
-// @namespace			https://github.com/mmmsoup
+// @name			Sainsbury's Bank CSV Export
+// @namespace		https://github.com/mmmsoup
 // @description		Download CSV files of your transactions for Sainsbury's Bank accounts in Fine standard format (https://github.com/mmmsoup/fine). 
-// @version				1
-// @match					https://online.sainsburysbank.co.uk/*
-// @grant					none
+// @version			1
+// @match			https://online.sainsburysbank.co.uk/*
+// @grant			none
 // ==/UserScript==
 
 const months = {
 	"Jan": "01",
-  "Feb": "02",
-  "Mar": "03",
-  "Apr": "04",
-  "May": "05",
-  "Jun": "06",
-  "Jul": "07",
-  "Aug": "08",
-  "Sep": "09",
-  "Oct": "10",
-  "Nov": "11",
-  "Dec": "12"
+	"Feb": "02",
+	"Mar": "03",
+	"Apr": "04",
+	"May": "05",
+	"Jun": "06",
+	"Jul": "07",
+	"Aug": "08",
+	"Sep": "09",
+	"Oct": "10",
+	"Nov": "11",
+	"Dec": "12"
 }
 
 function export_csv() {
-  const form = document.getElementById("csvexport-form");
-  const datebox = form.querySelector("#csvexport-datebox");
-  const tocsv = form.querySelector("#csvexport-tocsv");
-  
-  if (tocsv.style.width != "0px") { // show date picker
-  	tocsv.style.width = "0px";
-    datebox.style.width = datebox.getAttribute("initial_width");
-    datebox.children[1].select();
-  } else { // actually download CSV
-    const fromstr = datebox.children[1].value;
-    const tostr = datebox.children[3].value;
-    
-    // day, month, year
-    const fromparts = fromstr.split("/").map(function(x) { return parseInt(x) });
-    const toparts = tostr.split("/").map(function(x) { return parseInt(x) });
-    if (fromparts.length != 3 || toparts.length != 3) {
-    	alert("date should be in d-m-y order, separated by forward slashes (/)");
-      return;
-    }
-    for (var i = 0; i < 3; i++) {
-      console.log(fromparts[i], toparts[i], NaN);
-    	if (fromparts[i] !== fromparts[i]) {
-        alert("invalid character in date '"+fromstr+"'");
-        return;
-      }
-      if (toparts[i] !== toparts[i]) {
-        alert("invalid character in date '"+tostr+"'");
-        return;
-      }
-    }
-    const fromdate = fromparts[2] * 10000 + fromparts[1] * 100 + fromparts[0];
-    const todate = toparts[2] * 10000 + toparts[1] * 100 + toparts[0];
-    if (fromdate > todate) {
-    	alert("from date more recent than to date!");
-      return;
-    }
-    
-    
-  	console.log("bonjour");
-    datebox.style.width = "0px";
-  	tocsv.style.width = tocsv.getAttribute("initial_width");
-  
-    const acct_sum_el = document.querySelector("div.account-summary");
-    var output = "Sainsbury's Bank: " + acct_sum_el.querySelector("h2").innerText + " [" + acct_sum_el.querySelector("p.sort-code > strong").innerText + " " + acct_sum_el.querySelector("p.account-number > strong").innerText + "]\n";
-    const rows = document.querySelectorAll(".account-transactions-table > tbody > tr.no-transaction-details");
-    const reverse = datebox.getAttribute("reverse") == "true";
-    for (var i = 0; i < rows.length; i++) {
-    	var row = rows[reverse ? rows.length - i - 1 : i];
-      var date = parseInt("20" + row.children[0].innerText.slice(7,9) + months[row.children[0].innerText.slice(3,6)] + row.children[0].innerText.slice(0,2));
-      if (date >= fromdate && date <= todate) {
-        var datestr = date.toString();
-      	output += "\"" + datestr.slice(0, 4) + "-" + datestr.slice(4,6) + "-" + datestr.slice(6,8) + "\",\"" + row.children[2].innerText.replace(/[\s£,]+/g,"") + "\",\"" + row.children[1].innerText + "\"\n";
-      }
-    }
-    
-    const today = new Date();
+	const form = document.getElementById("csvexport-form");
+	const datebox = form.querySelector("#csvexport-datebox");
+	const tocsv = form.querySelector("#csvexport-tocsv");
+	
+	if (tocsv.style.width != "0px") { // show date picker
+		tocsv.style.width = "0px";
+		datebox.style.width = datebox.getAttribute("initial_width");
+		datebox.children[1].select();
+	} else { // actually download CSV
+		const fromstr = datebox.children[1].value;
+		const tostr = datebox.children[3].value;
+
+		// day, month, year
+		const fromparts = fromstr.split("/").map(function(x) { return parseInt(x) });
+		const toparts = tostr.split("/").map(function(x) { return parseInt(x) });
+		if (fromparts.length != 3 || toparts.length != 3) {
+			alert("date should be in d-m-y order, separated by forward slashes (/)");
+			return;
+		}
+		for (var i = 0; i < 3; i++) {
+			if (fromparts[i] !== fromparts[i]) {
+				alert("invalid character in date '"+fromstr+"'");
+				return;
+			}
+			if (toparts[i] !== toparts[i]) {
+				alert("invalid character in date '"+tostr+"'");
+				return;
+			}
+		}
+		const fromdate = fromparts[2] * 10000 + fromparts[1] * 100 + fromparts[0];
+		const todate = toparts[2] * 10000 + toparts[1] * 100 + toparts[0];
+		if (fromdate > todate) {
+			alert("from date more recent than to date!");
+			return;
+		}
+
+		datebox.style.width = "0px";
+		tocsv.style.width = tocsv.getAttribute("initial_width");
+	  
+		const acct_sum_el = document.querySelector("div.account-summary");
+		var output = "Sainsbury's Bank: " + acct_sum_el.querySelector("h2").innerText + " [" + acct_sum_el.querySelector("p.sort-code > strong").innerText + " " + acct_sum_el.querySelector("p.account-number > strong").innerText + "]\n";
+		const rows = document.querySelectorAll(".account-transactions-table > tbody > tr.no-transaction-details");
+		const reverse = datebox.getAttribute("reverse") == "true";
+		for (var i = 0; i < rows.length; i++) {
+			var row = rows[reverse ? rows.length - i - 1 : i];
+			var date = parseInt("20" + row.children[0].innerText.slice(7,9) + months[row.children[0].innerText.slice(3,6)] + row.children[0].innerText.slice(0,2));
+			if (date >= fromdate && date <= todate) {
+				var datestr = date.toString();
+				output += "\"" + datestr.slice(0, 4) + "-" + datestr.slice(4,6) + "-" + datestr.slice(6,8) + "\",\"" + row.children[2].innerText.replace(/[\s£,]+/g,"") + "\",\"" + row.children[1].innerText + "\"\n";
+			}
+		}
+		
+		const today = new Date();
 		const date_today = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
-    
-    const file = new Blob([output], {type: "text/csv"});
-    const a = document.createElement("a");
-    const url = URL.createObjectURL(file);
-    a.href = url;
-    a.download = "sainsburys-" + date_today + ".csv";
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function() {
-    	document.body.removeChild(a);
-    	window.URL.revokeObjectURL(url);
-    }, 0);
-  }
+		
+		const file = new Blob([output], {type: "text/csv"});
+		const a = document.createElement("a");
+		const url = URL.createObjectURL(file);
+		a.href = url;
+		a.download = "sainsburys-" + date_today + ".csv";
+		document.body.appendChild(a);
+		a.click();
+		setTimeout(function() {
+			document.body.removeChild(a);
+			window.URL.revokeObjectURL(url);
+		}, 0);
+	}
 }
 
 const styles = " \
@@ -167,8 +164,8 @@ if (extrema[1] < extrema[0]) {
 	datebox.setAttribute("reverse", "true");
 }
 extrema.forEach((date, i) => {
-  const str = date.toString();
-  dates[i].value = str.slice(6,8) + "/" + str.slice(4,6) + "/" + str.slice(0, 4);
+	const str = date.toString();
+	dates[i].value = str.slice(6,8) + "/" + str.slice(4,6) + "/" + str.slice(0, 4);
 });
 datebox.appendChild(labels[0]);
 datebox.appendChild(dates[0]);
