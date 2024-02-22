@@ -1,11 +1,9 @@
 #!/bin/python3
 
+from lidlplus import LidlPlusApi
 import json
 import os
 import sys
-
-# https://github.com/Andre0512/lidl-plus
-from lidlplus import LidlPlusApi
 
 step = 1;
 def printstep(message):
@@ -93,10 +91,13 @@ elif sys.argv[1] == "items":
                     attributesdict[item["name"]]["quantity"] += item["quantity"]
     itemslist.sort()
     for item in itemslist:
-        if item in config["rules"]:
-            print("\033[1m"+str(attributesdict[item]["quantity"])+(attributesdict[item]["isweight"] and "kg\t" or "\t")+item+(" " * (21-len(item)))+"("+config["rules"][item]+")\033[0m")
-        else:
-            print(str(attributesdict[item]["quantity"])+(attributesdict[item]["isweight"] and "kg\t" or "\t")+item)
+        print((item in config["rules"] and "\033[1;34m" or "")+(attributesdict[item]["isweight"] and str(round(attributesdict[item]["quantity"],3))+"kg\t" or str(attributesdict[item]["quantity"]) +"\t")+item+(item in config["rules"] and (" " * (21-len(item)))+"("+config["rules"][item]+")"+"\033[0m" or ""))
+elif sys.argv[1] == "help":
+    print("lidl.py")
+    print("\t\tdl\t[yyyy-mm]")
+    print("\t\tmkadj\t[yyyy-mm]")
+    print("\t\titems")
+    print("\t\thelp")
 elif sys.argv[1] == None:
     print("missing required subcommand")
 else:
