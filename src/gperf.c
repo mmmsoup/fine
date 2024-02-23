@@ -20,6 +20,12 @@ const char *get_ttype_pretty_string(ttype_t ttype) {
 		case TTYPE_CASH_DEBIT:
 			return "-cash";
 			break;
+		case TTYPE_CHEQUE_CREDIT:
+			return "+cheq";
+			break;
+		case TTYPE_CHEQUE_DEBIT:
+			return "-cheq";
+			break;
 		default:
 			return "";
 	}

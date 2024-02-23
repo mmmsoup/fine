@@ -20,6 +20,8 @@ struct gsiv_t;
 -card,		TTYPE_CARD_DEBIT
 +cash,		TTYPE_CASH_CREDIT
 -cash,		TTYPE_CASH_DEBIT
++cheq,		TTYPE_CHEQUE_CREDIT
+-cheq,		TTYPE_CHEQUE_DEBIT
 +unknown,	TTYPE_UNKNOWN | TTYPE_CREDIT
 -unknown,	TTYPE_UNKNOWN | TTYPE_DEBIT
 ####
