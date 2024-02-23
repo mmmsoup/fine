@@ -1,6 +1,6 @@
 #include "banks.h"
 
-int parse_stdfmt(char *path, transaction_list_t *list) {
+int parse_stdfmt(char *path, transaction_list_t *list, ttype_t debit, ttype_t credit) {
 	csv_t csv;
 	if (csv_open(&csv, path) != EXIT_SUCCESS) {
 		fprintf(stderr, "csv_open(): %s\n", strerror(errno));
@@ -26,7 +26,7 @@ int parse_stdfmt(char *path, transaction_list_t *list) {
 		transaction->date.days_since_epoch = days_since_epoch(transaction->date.day, transaction->date.month, transaction->date.year);
 
 		transaction->amount = parse_string_price(line.fields[1]);
-		transaction->type = transaction->amount < 0 ? TTYPE_CASH_DEBIT : TTYPE_CASH_CREDIT;
+		transaction->type = transaction->amount < 0 ? debit : credit;
 
 		transaction->description = malloc(sizeof(char)*(strlen(line.fields[2])+1));
 		strcpy(transaction->description, line.fields[2]);
@@ -48,6 +48,14 @@ int parse_stdfmt(char *path, transaction_list_t *list) {
 	csv_close(&csv);
 
 	return EXIT_SUCCESS;
+}
+
+inline int parse_stdfmt_acct(char *path, transaction_list_t *list) {
+	return parse_stdfmt(path, list, TTYPE_ACCT_DEBIT, TTYPE_ACCT_CREDIT);
+}
+
+inline int parse_stdfmt_cash(char *path, transaction_list_t *list) {
+	return parse_stdfmt(path, list, TTYPE_CASH_DEBIT, TTYPE_CASH_CREDIT);
 }
 
 int parse_nationwide(char *path, transaction_list_t *list) {
