@@ -60,11 +60,14 @@ int print_balance(transaction_list_collection_t collection, flags_t flags) {
 	memset(spaces, ' ', sizeof(spaces)/sizeof(char));
 
 	for (int i = 0; i < num_distinct_accounts; i++) {
-		wprintf(L"%s%.*s %.*s ", names[i], name_column_width - strlen(names[i]), spaces);
+		wprintf(L"%s%.*s ", names[i], name_column_width - strlen(names[i]), spaces);
+
+		unsigned int n_balance_digits = intstrlen(ABS(balances[i])) + 2*(balances[i] == 0);
+
 		if (balances[i] < 0) {
-			wprintf(L"%.*s%ls-£%.02f%ls\n", balance_column_width - (intstrlen(-1*balances[i]) + 3), spaces, esc_negative, (-1*balances[i])/100.0f, esc_end);
+			wprintf(L"%.*s%ls-£%.02f%ls\n", balance_column_width - (n_balance_digits + 2), spaces, esc_negative, (-1*balances[i])/100.0f, esc_end);
 		} else {
-			wprintf(L"%.*s%ls£%.02f%ls\n", balance_column_width - (intstrlen(balances[i]) + 2), spaces, esc_positive, (balances[i])/100.0f, esc_end);
+			wprintf(L"%.*s%ls£%.02f%ls\n", balance_column_width - (n_balance_digits + 1), spaces, esc_positive, (balances[i])/100.0f, esc_end);
 		}
 	}
 

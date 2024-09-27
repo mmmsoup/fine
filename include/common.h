@@ -14,6 +14,8 @@
 #define MAX(a,b) (a < b ? b : a)
 #define MIN(a,b) (a > b ? b : a)
 
+#define ABS(a) (a < 0 ? -(a) : a)
+
 #define ESC_BOLD		L"\e[1m"
 #define ESC_POSITIVE	L"\e[32m"
 #define ESC_NEGATIVE	L"\e[31m"
