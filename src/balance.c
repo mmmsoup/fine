@@ -9,7 +9,7 @@ int print_balance(transaction_list_collection_t collection, flags_t flags) {
 	const wchar_t *esc_zero		= (flags & FLAG_COLOUR) ? ESC_ZERO		: ESC_NONE;
 	const wchar_t *esc_end		= (flags & FLAG_COLOUR) ? ESC_END		: ESC_NONE;
 
-	char *names[collection.num_accounts];
+	wchar_t *names[collection.num_accounts];
 	char *banks[collection.num_accounts];
 	date_t lastdates[collection.num_accounts];
 	int balances[collection.num_accounts];
@@ -20,7 +20,7 @@ int print_balance(transaction_list_collection_t collection, flags_t flags) {
 		new = 1;
 
 		for (int j = 0; j < num_distinct_accounts; j++) {
-			if (strcmp(collection.lists[i].name, names[j]) == 0 && strcmp(collection.lists[i].bank, banks[j]) == 0) {
+			if (wcscmp(collection.lists[i].name, names[j]) == 0 && strcmp(collection.lists[i].bank, banks[j]) == 0) {
 				if (earlier_date(collection.lists[i].transactions[collection.lists[i].size-1].date, lastdates[j])) {
 					balances[j] = collection.lists[i].balance;
 					lastdates[j] = collection.lists[i].transactions[collection.lists[i].size-1].date;
@@ -43,9 +43,7 @@ int print_balance(transaction_list_collection_t collection, flags_t flags) {
 	int balance_column_width = 0; 
 	int total = 0;
 	for (int i = 0; i < num_distinct_accounts; i++) {
-		if (strcmp(names[i], "Cash Transactions") == 0) names[i] = cash;
-
-		int namelen = strlen(names[i]);
+		int namelen = wcslen(names[i]);
 		name_column_width = MAX(name_column_width, namelen);
 
 		int balancelen = balances[i] < 0 ? intstrlen(-1*balances[i]) + 3 : intstrlen(balances[i]) + 2;
@@ -60,7 +58,7 @@ int print_balance(transaction_list_collection_t collection, flags_t flags) {
 	memset(spaces, ' ', sizeof(spaces)/sizeof(char));
 
 	for (int i = 0; i < num_distinct_accounts; i++) {
-		wprintf(L"%s%.*s ", names[i], name_column_width - strlen(names[i]), spaces);
+		wprintf(L"%ls%.*s ", names[i], name_column_width - wcslen(names[i]), spaces);
 
 		unsigned int n_balance_digits = intstrlen(ABS(balances[i])) + 2*(balances[i] == 0);
 

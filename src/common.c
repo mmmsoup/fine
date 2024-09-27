@@ -1,11 +1,11 @@
 #include "common.h"
 
-int transaction_list_create(transaction_list_t *list, char *name, char *bank, char *file, size_t size) {
+int transaction_list_create(transaction_list_t *list, wchar_t *name, char *bank, char *file, size_t size) {
 	list->transactions = malloc(sizeof(transaction_t)*size);
 	list->capacity = size;
 	list->size = 0;
-	list->name = malloc(sizeof(char)*(strlen(name)+1));
-	strcpy(list->name, name);
+	list->name = malloc(sizeof(wchar_t)*(wcslen(name)+1));
+	wcscpy(list->name, name);
 	list->bank = malloc(sizeof(char)*(strlen(bank)+1));
 	strcpy(list->bank, bank);
 	list->file = malloc(sizeof(char)*(strlen(file)+1));

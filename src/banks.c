@@ -10,7 +10,10 @@ int parse_stdfmt(char *path, transaction_list_t *list, ttype_t debit, ttype_t cr
 	csv_line_t line;
 	csv_next_line(&csv, &line);
 
-	transaction_list_create(list, line.fields[0], "Standard Format", path, TRANSACTIONS_ALLOC_NUM);
+	int wchar_name_size = strlen(line.fields[0]) + 1;
+	wchar_t wchar_name[wchar_name_size];
+	swprintf(wchar_name, wchar_name_size, L"%hs", line.fields[0]);
+	transaction_list_create(list, wchar_name, "Standard Format", path, TRANSACTIONS_ALLOC_NUM);
 	list->balance = 0;
 
 	transaction_t *transaction = list->transactions;
@@ -67,7 +70,11 @@ int parse_nationwide(char *path, transaction_list_t *list) {
 
 	csv_line_t line;
 	csv_next_line(&csv, &line);
-	transaction_list_create(list, line.fields[1], "Nationwide", path, TRANSACTIONS_ALLOC_NUM);
+
+	int wchar_name_size = strlen(line.fields[1]);
+	wchar_t wchar_name[wchar_name_size];
+	swprintf(wchar_name, wchar_name_size, L"%hs", line.fields[1]);
+	transaction_list_create(list, wchar_name, "Nationwide", path, TRANSACTIONS_ALLOC_NUM);
 	csv_free_line(&line);
 
 	csv_skip_lines(&csv, 4);
@@ -121,7 +128,11 @@ int parse_natwest(char *path, transaction_list_t *list) {
 
 	csv_line_t line;
 	csv_next_line(&csv, &line);
-	transaction_list_create(list, line.fields[6], "Natwest", path, TRANSACTIONS_ALLOC_NUM);
+
+	int wchar_name_size = strlen(line.fields[6]);
+	wchar_t wchar_name[wchar_name_size];
+	swprintf(wchar_name, wchar_name_size, L"%hs", line.fields[6]);
+	transaction_list_create(list, wchar_name, "Natwest", path, TRANSACTIONS_ALLOC_NUM);
 	list->balance = parse_string_price(line.fields[4]);
 
 	transaction_t *transaction = list->transactions;
